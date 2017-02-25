@@ -57,6 +57,22 @@ output
 }
 ```
 
+## How to
+
+### Map append?
+
+```
+    fmt.Print(fb.Child("a", "b").Exists()) // [false]
+    fb.Child("a", "b").Set(10)
+    fmt.Print(fb.Child("a", "b").Exists()) // [true]
+```
+
+### Array append?
+
+```
+    fb.Push(11)
+```
+
 ## type and func list
 
 ### type
@@ -116,23 +132,12 @@ int => refer array (overflow => panic()/panic()) <br>
     func (f *Filebase) Len() int
 ```
 
-To***() => wrapper of Interface()<br>
+To*() => Interface() wrapper<br>
 <br>
 GetInterface() => If you want to do type switch then use this.<br>
 But do not often use it for eliminate mistake because hard to use.<br>
 <br>
-String() => You can do type switch with regexp too.<br>
-Auto indent by tab.<br>
-
-```
-[regexp(string value) => type] 
-    ".*" => string 
-    [1-9][0-9]* => int 
-    [1-9][0-9]*.[0-9]*[1-9] => float 
-    (true|false) => bool 
-    null => null 
-    nil => [NotHasChild] 
-```
+String() => fmt.Stringer<br>
 <br>
 Keys() => map keys (not map => Error!) <br>
 Len() => array length (not array => Error!) <br>
