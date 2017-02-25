@@ -36,7 +36,7 @@ fb.Fpush(item) // like append()
 
 // Display [class == "A"]
 fb.Each(func(f *filebase.Filebase) {
-    if f.Child("class").String() == `"A"` {
+    if f.Child("class").ToString() == "A" {
         fmt.Println(f) // ↓[output]↓
     }
 })
@@ -72,11 +72,21 @@ output
     func NewByFile(name string) (*Filebase, error)
     func NewByReader(reader io.Reader) (*Filebase, error)
 ```
+NewByFile() => gzip file ".gz"
+
+### Writer func
+
+```
+func (f *Filebase) WriteTo(w io.Writer) error
+func (f *Filebase) WriteToFile(filename string) error
+```
+WriteToFile() => gzip file ".gz"
 
 ### Referer func
 
 ```
     func (f Filebase) Child(path ...interface{}) *Filebase
+    func (f Filebase) ChildPath(path ...string) *Filebase
     func (f Filebase) Parent() *Filebase
     func (f Filebase) Root() *Filebase
 ```
@@ -87,12 +97,27 @@ int => refer array (overflow => panic()/panic()) <br>
 ### Getter func
 
 ```
-    func (f Filebase) GetInterface() (*interface{}, error)
     func (f Filebase) String() string
-    func (f Filebase) Keys() ([]string, error)
-    func (f Filebase) Len() (int, error)
+    func (f *Filebase) Bytes() []byte
+    func (f *Filebase) BytesIndent() []byte
+
+    func (f *Filebase) ToArray() []*Filebase
+    func (f *Filebase) ToBool() bool
+    func (f *Filebase) ToBytes() []byte
+    func (f *Filebase) ToFloat() float64
+    func (f *Filebase) ToInt() int64
+    func (f *Filebase) ToMap() map[string]*Filebase
+    func (f *Filebase) ToString() string
+    func (f *Filebase) ToUint() uint64
+
+    func (f *Filebase) Interface() interface{}
+    func (f *Filebase) GetInterface() (*interface{}, error)
+    func (f *Filebase) Keys() []string
+    func (f *Filebase) Len() int
 ```
 
+To***() => wrapper of Interface()<br>
+<br>
 GetInterface() => If you want to do type switch then use this.<br>
 But do not often use it for eliminate mistake because hard to use.<br>
 <br>
@@ -124,10 +149,25 @@ Len() => array length (not array => Error!) <br>
 Set() => append map or set value<br>
 Push() => append array <br>
 
+### Check func
+
+```
+    func (f *Filebase) Exists() bool
+
+    func (f *Filebase) IsArray() bool
+    func (f *Filebase) IsBool() bool
+    func (f *Filebase) IsFloat() bool
+    func (f *Filebase) IsInt() bool
+    func (f *Filebase) IsMap() bool
+    func (f *Filebase) IsNull() bool
+    func (f *Filebase) IsString() bool
+    func (f *Filebase) IsUint() bool
+```
+
 ### Other func
 ```
-    func (f Filebase) Clone() (*Filebase, error) 
-    func (f Filebase) Each(fn func(*Filebase))
+    func (f *Filebase) Clone() (*Filebase, error) 
+    func (f *Filebase) Each(fn func(*Filebase))
 ```
 Clone() => value copy. <br>
 "f" location become to new json root.<br>
