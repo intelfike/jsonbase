@@ -1,9 +1,7 @@
-# 現在大幅な仕様変更中で、README.mdは当てになりません
-
 # update/refer to json like firebase(web).
 You do not need to directly manipulate complex nested interface{}<br>
 firebase(web)っぽくjsonを加工・参照できるgolangのパッケージです。<br>
-あなたが複雑なinterface{}を直接操作する必要はありません。<br>
+複雑なinterface{}を直接操作する必要はありません。<br>
 
 ## install
 command
@@ -43,7 +41,7 @@ fb.Each(func(f *filebase.Filebase) {
 })
 ```
 
-output
+### output
 
 ```
 {
@@ -72,6 +70,23 @@ output
 
 ```
     fb.Push(11)
+```
+
+### Make and use template?
+
+```
+    template := filebase.MustNew(`{"id":0, "option":"e"}`)
+    fb.PushFB(template) // fb.Child(0) == template
+    fb.PushFB(template) // fb.Child(1) == template
+```
+
+### Get child from filepath or other?
+
+```
+    fb.ChildPath("a/b/c").Set(1) // or
+    fb.ChildPath("a\\b\\b").Set(2) // or
+    fb.ChildPath("a/b\\c").Set(3) // or
+    fb.ChildPath("a/b/c", "e/f", "g").Set(4)
 ```
 
 ## type and func list
@@ -132,7 +147,7 @@ int => refer array (overflow => panic()/panic()) <br>
 
     func (f *Filebase) Interface() interface{}
     func (f *Filebase) GetInterface() (*interface{}, error)
-    
+
     func (f *Filebase) Keys() []string
     func (f *Filebase) Len() int
 ```
@@ -192,4 +207,4 @@ Clone() => value copy. <br>
 Each() => loop map or array.<br>
 
 ## Licence
-MIT(適当)
+MIT
