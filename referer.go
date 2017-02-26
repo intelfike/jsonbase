@@ -1,6 +1,8 @@
 package filebase
 
-import "strings"
+import (
+	"regexp"
+)
 
 // Get json root.
 func (f Filebase) Root() *Filebase {
@@ -20,9 +22,15 @@ func (f Filebase) Child(path ...interface{}) *Filebase {
 	}
 	return &f
 }
+
+var splitReg = regexp.MustCompile("[/\\\\]")
+
+// "a/b/c" => {"a":{"b":{"c":???}}}
+//
+// "/" Split.
 func (f Filebase) ChildPath(path ...string) *Filebase {
 	for _, v := range path {
-		for _, v2 := range strings.Split(v, "/") {
+		for _, v2 := range splitReg.Split(v, -1) {
 			f.path = append(f.path, v2)
 		}
 	}

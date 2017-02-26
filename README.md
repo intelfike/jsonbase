@@ -26,13 +26,14 @@ jsonData := `
     {"id": 5,"name": "ナカヤマ","class": "C"} 
 ]
 `
-fb, _ := filebase.New([]byte(jsonData))
+fb, _ := filebase.New(jsonData)
+fb.Indent = "\t"
 
 // Add Data
 item, _ := fb.Child(0).Clone() // value copy
 item.Child("id").Set(6)
 item.Child("name").Set("トクガワ")
-fb.Fpush(item) // like append()
+fb.PushFB(item) // like append()
 
 // Display [class == "A"]
 fb.Each(func(f *filebase.Filebase) {
@@ -78,14 +79,17 @@ output
 ### type
 
 ```
-    type Filebase struct{...}
+    type Filebase struct{
+        Indent string
+    }
 ```
 
 ### Maker func
 
 ```
+    func MustNew(b []byte) *Filebase
     func New(b []byte) (*Filebase, error)
-    func NewByFile(name string) (*Filebase, error)
+    func NewByFile(filename) (*Filebase, error)
     func NewByReader(reader io.Reader) (*Filebase, error)
 ```
 NewByFile() => gzip file ".gz"
@@ -93,8 +97,8 @@ NewByFile() => gzip file ".gz"
 ### Writer func
 
 ```
-func (f *Filebase) WriteTo(w io.Writer) error
-func (f *Filebase) WriteToFile(filename string) error
+    func (f *Filebase) WriteTo(w io.Writer) error
+    func (f *Filebase) WriteToFile(filename string) error
 ```
 WriteToFile() => gzip file ".gz"
 
@@ -128,6 +132,7 @@ int => refer array (overflow => panic()/panic()) <br>
 
     func (f *Filebase) Interface() interface{}
     func (f *Filebase) GetInterface() (*interface{}, error)
+    
     func (f *Filebase) Keys() []string
     func (f *Filebase) Len() int
 ```
@@ -145,10 +150,18 @@ Len() => array length (not array => Error!) <br>
 ### Setter func
 
 ```
-    func (f *Filebase) Fpush(fb *Filebase)
-    func (f *Filebase) Fset(fb *Filebase)
-    func (f *Filebase) Push(i interface{})
+    func (f *Filebase) Push(a interface{}) error
+    func (f *Filebase) PushFB(fb *Filebase) error
+    func (f *Filebase) PushPrint(i ...interface{}) error
+    func (f *Filebase) PushPrintf(s string, i ...interface{}) error
+    func (f *Filebase) PushStr(s string) error
+
     func (f *Filebase) Set(i interface{}) error
+    func (f *Filebase) SetFB(fb *Filebase) error
+    func (f *Filebase) SetPrint(i ...interface{}) error
+    func (f *Filebase) SetPrintf(s string, i ...interface{}) error
+    func (f *Filebase) SetStr(s string) error
+    
     func (f *Filebase) Remove()
 ```
 Set() => append map or set value<br>
