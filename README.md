@@ -133,8 +133,8 @@ int => refer array (overflow => panic()/panic()) <br>
 
 ```
     func (f Filebase) String() string
-    func (f *Filebase) Bytes() []byte
-    func (f *Filebase) BytesIndent() []byte
+    func (f *Filebase) Bytes() ([]byte, error)
+    func (f *Filebase) BytesIndent() ([]byte, error)
 
     func (f *Filebase) ToArray() []*Filebase
     func (f *Filebase) ToBool() bool

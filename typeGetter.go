@@ -5,7 +5,12 @@ import "encoding/json"
 
 //  fmt.Stringer interface
 func (f Filebase) String() string {
-	b, _ := f.BytesIndent()
+	var b []byte
+	if len(f.Indent) == 0 {
+		b, _ = f.Bytes()
+	} else {
+		b, _ = f.BytesIndent()
+	}
 	return string(b)
 }
 
