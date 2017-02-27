@@ -80,7 +80,11 @@ func mapNest(m map[string]interface{}, val interface{}, depth int, s ...string) 
 
 // Set *Filebase.
 func (f *Filebase) SetFB(fb *Filebase) error {
-	return f.SetStr(string(fb.Bytes()))
+	b, err := fb.Bytes()
+	if err != nil {
+		return err
+	}
+	return f.SetStr(string(b))
 }
 
 // Set string.
@@ -120,7 +124,11 @@ func (f *Filebase) Push(a interface{}) error {
 
 // Push *Filebase.
 func (f *Filebase) PushFB(fb *Filebase) error {
-	return f.PushStr(string(fb.Bytes()))
+	b, err := fb.Bytes()
+	if err != nil {
+		return err
+	}
+	return f.PushStr(string(b))
 }
 
 // push string.

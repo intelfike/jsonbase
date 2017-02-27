@@ -154,7 +154,11 @@ func (f *Filebase) Clone() (*Filebase, error) {
 	newfb := new(Filebase)
 	newfb.Indent = f.Indent
 	newfb.master = new(interface{})
-	err := json.Unmarshal(f.Bytes(), newfb.master)
+	b, err := f.Bytes()
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(b, newfb.master)
 	return newfb, err
 }
 

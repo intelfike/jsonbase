@@ -5,22 +5,15 @@ import "encoding/json"
 
 //  fmt.Stringer interface
 func (f Filebase) String() string {
-	return string(f.BytesIndent())
+	b, _ := f.BytesIndent()
+	return string(b)
 }
 
-func (f *Filebase) Bytes() []byte {
-	b, err := json.Marshal(f.Interface())
-	if err != nil {
-		panic(err)
-	}
-	return b
+func (f *Filebase) Bytes() ([]byte, error) {
+	return json.Marshal(f.Interface())
 }
-func (f *Filebase) BytesIndent() []byte {
-	b, err := json.MarshalIndent(f.Interface(), "", f.Indent)
-	if err != nil {
-		panic(err)
-	}
-	return b
+func (f *Filebase) BytesIndent() ([]byte, error) {
+	return json.MarshalIndent(f.Interface(), "", f.Indent)
 }
 
 // Assert string.
