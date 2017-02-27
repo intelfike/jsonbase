@@ -78,12 +78,12 @@ func mapNest(m map[string]interface{}, val interface{}, depth int, s ...string) 
 	mapNest(mm, val, depth+1, s...)
 }
 
-// Set() => Filebase to Filebase.
+// Set *Filebase.
 func (f *Filebase) SetFB(fb *Filebase) error {
 	return f.SetStr(string(fb.Bytes()))
 }
 
-// string set.
+// Set string.
 func (f *Filebase) SetStr(s string) error {
 	i := new(interface{})
 	err := json.Unmarshal([]byte(s), i)
@@ -93,14 +93,14 @@ func (f *Filebase) SetStr(s string) error {
 	return f.Set(*i)
 }
 
-// string set.
-func (f *Filebase) SetPrint(i ...interface{}) error {
-	return f.SetStr(fmt.Sprint(i...))
+// SetStr() + fmt.Sprint().
+func (f *Filebase) SetPrint(a ...interface{}) error {
+	return f.SetStr(fmt.Sprint(a...))
 }
 
-// string set.
-func (f *Filebase) SetPrintf(s string, i ...interface{}) error {
-	return f.SetStr(fmt.Sprintf(s, i...))
+// SetStr() + fmt.Sprintf().
+func (f *Filebase) SetPrintf(format string, a ...interface{}) error {
+	return f.SetStr(fmt.Sprintf(format, a...))
 }
 
 // It like append().
@@ -118,12 +118,12 @@ func (f *Filebase) Push(a interface{}) error {
 	return f.Set(append(ar, a))
 }
 
-// Push() => Filebase to Filebase.
+// Push *Filebase.
 func (f *Filebase) PushFB(fb *Filebase) error {
 	return f.PushStr(string(fb.Bytes()))
 }
 
-// string push.
+// push string.
 func (f *Filebase) PushStr(s string) error {
 	i := new(interface{})
 	err := json.Unmarshal([]byte(s), i)
@@ -133,14 +133,14 @@ func (f *Filebase) PushStr(s string) error {
 	return f.Push(*i)
 }
 
-// string push.
-func (f *Filebase) PushPrint(i ...interface{}) error {
-	return f.PushStr(fmt.Sprint(i...))
+// PushStr() + fmt.Sprint().
+func (f *Filebase) PushPrint(a ...interface{}) error {
+	return f.PushStr(fmt.Sprint(a...))
 }
 
-// string push.
-func (f *Filebase) PushPrintf(s string, i ...interface{}) error {
-	return f.PushStr(fmt.Sprintf(s, i...))
+// PushStr() + fmt.Sprintf().
+func (f *Filebase) PushPrintf(format string, a ...interface{}) error {
+	return f.PushStr(fmt.Sprintf(format, a...))
 }
 
 // Remove() remove map or array element

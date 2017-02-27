@@ -3,12 +3,12 @@ You do not need to directly manipulate complex nested interface{}<br>
 firebase(web)っぽくjsonを加工・参照できるgolangのパッケージです。<br>
 複雑なinterface{}を直接操作する必要はありません。<br>
 
-## install
+## Installation
 command
 
 ```go get github.com/intelfike/lib/filebase```
 
-## usage
+## Usage
 
 Append array <br>
 ↓<br>
@@ -159,8 +159,8 @@ But do not often use it for eliminate mistake because hard to use.<br>
 <br>
 String() => fmt.Stringer<br>
 <br>
-Keys() => map keys (not map => Error!) <br>
-Len() => array length (not array => Error!) <br>
+Keys() => map keys <br>
+Len() => array length <br>
 
 ### Setter func
 

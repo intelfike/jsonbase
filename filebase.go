@@ -170,6 +170,11 @@ func (f *Filebase) Keys() []string {
 	return s
 }
 
+func (f *Filebase) HasKey(s string) bool {
+	_, ok := f.Interface().(map[string]interface{})[s]
+	return ok
+}
+
 //This get len, check if array.
 //
 // If json node is array then return len(array) & nil.
