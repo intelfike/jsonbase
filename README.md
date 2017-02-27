@@ -182,10 +182,11 @@ Len() => array length <br>
 Set() => append map or set value<br>
 Push() => append array <br>
 
-### Check func
+### Checker func
 
 ```
     func (f *Filebase) Exists() bool
+    func (f *Filebase) HasKey(s string) bool
 
     func (f *Filebase) IsArray() bool
     func (f *Filebase) IsBool() bool
