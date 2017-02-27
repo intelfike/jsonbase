@@ -126,8 +126,6 @@ WriteToFile() => gzip file ".gz"
     func (f Filebase) Root() *Filebase
 ```
 Child(...interface{} => string or int) <br>
-string => refer map (has not child => return nil/make child) <br>
-int => refer array (overflow => panic()/panic()) <br>
 
 ### Getter func
 
