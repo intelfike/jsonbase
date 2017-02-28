@@ -144,7 +144,7 @@ Child(...interface{} => string or int) <br>
     func (f *Filebase) ToUint() uint64
 
     func (f *Filebase) Interface() interface{}
-    func (f *Filebase) GetInterface() (*interface{}, error)
+    func (f *Filebase) GetInterfacePt() (*interface{}, error)
 
     func (f *Filebase) Keys() []string
     func (f *Filebase) Len() int
