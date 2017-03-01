@@ -1,4 +1,4 @@
-// Gopherのためのjson操作パッケージ
+// Gopherのためのjson操作パッケージ var1.1
 package filebase
 
 import (
