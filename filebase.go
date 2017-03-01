@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -111,22 +112,26 @@ func (f *Filebase) GetInterfacePt() (*interface{}, error) {
 	cur := new(interface{})
 	*cur = *f.master
 	for _, pathv := range f.path {
-		switch pt := pathv.(type) {
-		case string:
-			mas, ok := (*cur).(map[string]interface{})
+		switch mas := (*cur).(type) {
+		case map[string]interface{}:
+			spt, ok := pathv.(string)
 			if !ok {
-				return nil, errors.New("JSON node is not map")
+				spt = strconv.Itoa(pathv.(int))
 			}
-			*cur, ok = mas[pt]
+			*cur, ok = mas[spt]
 			if !ok {
-				return nil, errors.New("JSON node not found.")
+				return nil, errors.New("JSON node not exists.")
 			}
-		case int:
-			mas, ok := (*cur).([]interface{})
-			if !ok {
-				return nil, errors.New("JSON node is not array")
+		case []interface{}:
+			switch pt := pathv.(type) {
+			case int:
+				if 0 > pt || pt >= len(mas) {
+					return nil, errors.New("Array index out of range.")
+				}
+				*cur = mas[pt]
+			default:
+				return nil, errors.New("JSON node is not Map.")
 			}
-			*cur = mas[pt]
 		}
 	}
 	return cur, nil

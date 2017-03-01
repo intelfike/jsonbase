@@ -1,6 +1,7 @@
 package filebase
 
 import (
+	"fmt"
 	"regexp"
 )
 
@@ -35,6 +36,9 @@ func (f Filebase) ChildPath(path ...string) *Filebase {
 		}
 	}
 	return &f
+}
+func (f Filebase) ChildPathf(format string, a ...interface{}) *Filebase {
+	return f.ChildPath(fmt.Sprintf(format, a...))
 }
 
 // Get json parent.

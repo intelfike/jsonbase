@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 // update child.
@@ -20,50 +21,49 @@ func (f *Filebase) Set(i interface{}) error {
 	}
 	cur := new(interface{})
 	*cur = *f.master
-	prev := *cur
-	prevkey := ""
-	_ = prevkey
 	for n, pathv := range f.path {
-		switch pt := pathv.(type) {
-		case string:
-			switch mas := (*cur).(type) {
-			case map[string]interface{}:
-				var ok bool
-				prev = *cur
-				*cur, ok = mas[pt]
-				if !ok {
-					mas[pt] = nil //map[string]interface{}{pt: i}
-				}
-				if n == len(f.path)-1 {
-					mas[pt] = i
-				}
-			default:
-				paths := []string{prevkey}
+		switch mas := (*cur).(type) {
+		case map[string]interface{}:
+			pt, ok := pathv.(string)
+			if !ok {
+				pt = strconv.Itoa(pathv.(int))
+			}
+			*cur, ok = mas[pt]
+			if !ok {
+				paths := []string{}
 				for _, v := range f.path[n:] {
 					s, ok := v.(string)
 					if !ok {
-						return errors.New("Child(...) can't make or append array. You can make or append array with Push() or Fpush().")
+						s = strconv.Itoa(v.(int))
 					}
 					paths = append(paths, s)
 				}
-				m, ok := prev.(map[string]interface{})
-				if !ok {
-					return errors.New("JSON node is not map. IsMap() == true?")
-				}
-				mapNest(m, i, 0, paths...)
+				mapNest(mas, i, 0, paths...)
 				return nil
 			}
-			prevkey = pt
-		case int:
-			mas, ok := (*cur).([]interface{})
-			if !ok {
-				return errors.New("JSON node is not array. IsArray() == true?")
-			}
-			if n == len(f.path)-1 { // 最後の要素なら
+			if n == len(f.path)-1 {
 				mas[pt] = i
-				return nil
 			}
-			*cur = mas[pt]
+		case []interface{}:
+			switch pt := pathv.(type) {
+			case string:
+				f.Parent().Set(map[string]interface{}{})
+				f.Set(i)
+			case int:
+				if 0 > pt || pt >= len(mas) {
+					return errors.New("Array index out of range.")
+				}
+				if n == len(f.path)-1 { // 最後の要素なら
+					mas[pt] = i
+					return nil
+				}
+				*cur = mas[pt]
+			}
+		default:
+			// _, ok := pathv.(string)
+			// if ok{
+
+			// }
 		}
 	}
 	return nil
@@ -152,22 +152,58 @@ func (f *Filebase) PushPrintf(format string, a ...interface{}) error {
 }
 
 // Remove() remove map or array element
-func (f *Filebase) Remove() {
+func (f *Filebase) Remove() error {
 	if len(f.path) == 0 {
-		if f.IsArray() {
-			f.Set([]interface{}{})
-		} else if f.IsMap() {
-			f.Set(map[string]interface{}{})
-		}
-		return
+		return errors.New("Root can't remove. Use Empty().")
 	}
 	path := f.path[len(f.path)-1]
 	i := f.Parent().Interface()
-	switch t := path.(type) {
-	case string:
-		delete(i.(map[string]interface{}), t)
-	case int:
-		arr := i.([]interface{})
-		f.Parent().Set(append(arr[:t], arr[t+1:]...))
+	// switch t := path.(type) {
+	// case string:
+	// 	m, ok := i.(map[string]interface{})
+	// 	if !ok {
+	// 		return errors.New("JSON node is not Map.")
+	// 	}
+	// 	delete(m, t)
+	// case int:
+	// 	arr := i.([]interface{})
+	// 	if 0 > t || t >= len(arr) {
+	// 		return errors.New("Array index out of range.")
+	// 	}
+	// 	f.Parent().Set(append(arr[:t], arr[t+1:]...))
+	// }
+	switch t := i.(type) {
+	case map[string]interface{}:
+		st, ok := path.(string)
+		if !ok {
+			st = strconv.Itoa(path.(int))
+		}
+		_, ok = t[st]
+		if !ok {
+			return errors.New("JSON node not exists.")
+		}
+		delete(t, st)
+	case []interface{}:
+		it, ok := path.(int)
+		if !ok {
+			return errors.New("JSON node is not Map().")
+		}
+		if 0 > it || it >= len(t) {
+			return errors.New("Array index out of range.")
+		}
+		f.Parent().Set(append(t[:it], t[it+1:]...))
+	default:
+		return errors.New("JSON node not exists. ")
 	}
+	return nil
+}
+func (f *Filebase) Empty() error {
+	if f.IsArray() {
+		f.Set([]interface{}{})
+	} else if f.IsMap() {
+		f.Set(map[string]interface{}{})
+	} else {
+		return errors.New("JSON node is not Array or Map. or node not exists.")
+	}
+	return nil
 }

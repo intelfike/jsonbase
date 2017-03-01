@@ -165,17 +165,18 @@ Len() => array length <br>
 ```
     func (f *Filebase) Push(a interface{}) error
     func (f *Filebase) PushFB(fb *Filebase) error
-    func (f *Filebase) PushPrint(i ...interface{}) error
-    func (f *Filebase) PushPrintf(s string, i ...interface{}) error
+    func (f *Filebase) PushPrint(a ...interface{}) error
+    func (f *Filebase) PushPrintf(s string, a ...interface{}) error
     func (f *Filebase) PushStr(s string) error
 
     func (f *Filebase) Set(i interface{}) error
     func (f *Filebase) SetFB(fb *Filebase) error
-    func (f *Filebase) SetPrint(i ...interface{}) error
-    func (f *Filebase) SetPrintf(s string, i ...interface{}) error
+    func (f *Filebase) SetPrint(a ...interface{}) error
+    func (f *Filebase) SetPrintf(s string, a ...interface{}) error
     func (f *Filebase) SetStr(s string) error
     
-    func (f *Filebase) Remove()
+    func (f *Filebase) Remove() error
+    func (f *Filebase) Empty() error
 ```
 Set() => append map or set value<br>
 Push() => append array <br>
