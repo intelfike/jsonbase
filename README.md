@@ -188,6 +188,7 @@ Push() => append array <br>
 ```
     func (f *Filebase) Exists() bool
     func (f *Filebase) HasKey(s string) bool
+    func (f *Filebase) InRangeIndex(i int) bool
 
     func (f *Filebase) IsArray() bool
     func (f *Filebase) IsBool() bool

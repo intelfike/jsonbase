@@ -38,3 +38,13 @@ func (f *Filebase) IsMap() bool {
 	_, ok := (f.Interface()).(map[string]interface{})
 	return ok
 }
+
+func (f *Filebase) HasChild(a interface{}) bool {
+	return f.Child(a).Exists()
+}
+func (f *Filebase) HasKey(s string) bool {
+	return f.Child(s).Exists()
+}
+func (f *Filebase) InRangeIndex(i int) bool {
+	return f.Child(i).Exists()
+}

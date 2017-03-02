@@ -158,20 +158,6 @@ func (f *Filebase) Remove() error {
 	}
 	path := f.path[len(f.path)-1]
 	i := f.Parent().Interface()
-	// switch t := path.(type) {
-	// case string:
-	// 	m, ok := i.(map[string]interface{})
-	// 	if !ok {
-	// 		return errors.New("JSON node is not Map.")
-	// 	}
-	// 	delete(m, t)
-	// case int:
-	// 	arr := i.([]interface{})
-	// 	if 0 > t || t >= len(arr) {
-	// 		return errors.New("Array index out of range.")
-	// 	}
-	// 	f.Parent().Set(append(arr[:t], arr[t+1:]...))
-	// }
 	switch t := i.(type) {
 	case map[string]interface{}:
 		st, ok := path.(string)

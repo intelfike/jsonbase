@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -101,42 +100,6 @@ func (f *Filebase) WriteToFile(filename string) error {
 	return f.WriteTo(file)
 }
 
-// If you want to do type switch then use this.
-// Do not use it much.
-//
-// You can do type switch with regexp too.
-// Refer to String().
-//
-// This function get interface{} pinter.
-func (f *Filebase) GetInterfacePt() (*interface{}, error) {
-	cur := new(interface{})
-	*cur = *f.master
-	for _, pathv := range f.path {
-		switch mas := (*cur).(type) {
-		case map[string]interface{}:
-			spt, ok := pathv.(string)
-			if !ok {
-				spt = strconv.Itoa(pathv.(int))
-			}
-			*cur, ok = mas[spt]
-			if !ok {
-				return nil, errors.New("JSON node not exists.")
-			}
-		case []interface{}:
-			switch pt := pathv.(type) {
-			case int:
-				if 0 > pt || pt >= len(mas) {
-					return nil, errors.New("Array index out of range.")
-				}
-				*cur = mas[pt]
-			default:
-				return nil, errors.New("JSON node is not Map.")
-			}
-		}
-	}
-	return cur, nil
-}
-
 // loop map or array
 func (f *Filebase) Each(fn func(*Filebase)) {
 	if f.IsArray() {
@@ -165,31 +128,4 @@ func (f *Filebase) Clone() (*Filebase, error) {
 	}
 	err = json.Unmarshal(b, newfb.master)
 	return newfb, err
-}
-
-// If json node is map then return key list & nil.
-//
-// else then return nil & error.
-func (f *Filebase) Keys() []string {
-	i := f.Interface()
-	s := []string{}
-	for key, _ := range i.(map[string]interface{}) {
-		s = append(s, key)
-	}
-	return s
-}
-
-func (f *Filebase) HasKey(s string) bool {
-	_, ok := f.Interface().(map[string]interface{})[s]
-	return ok
-}
-
-//This get len, check if array.
-//
-// If json node is array then return len(array) & nil.
-//
-// else then return -1 & error.
-func (f *Filebase) Len() int {
-	i := f.Interface()
-	return len(i.([]interface{}))
 }

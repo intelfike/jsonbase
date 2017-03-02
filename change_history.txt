@@ -1,7 +1,17 @@
-var1.0 -> 1.1
+ver1.0 -> 1.1
 
 ・Map生成時にArrayを破壊できるように変更
 ・Mapに対してChildで数値を指定すると、数値を文字列に変換するように変更
 ・Set()がpanicを起こしていたのをエラーを返すように変更
 ・Remove()がpanicを起こしていたのをエラーを返すように変更
 ・ArrayかMapを空にするEmpty()を作成
+
+ver1.1 -> 1.2
+
+・HasKey()のArray版のInRangeIndex()を作成
+・どちらでも可能なHasChild()を作成
+・typeCheckerとtypeGetterをcheckerとgetterに変更、メソッドをいくつか移動。
+・値コピーだったToMap()とToArray()を参照コピーに変更
+・Path()/BottomPath()を追加、Child()などで過去に辿った道筋を取得できる。
+・Parent()の複数回バージョンのAncestor()を追加
+・存在しないMapへのアクセスがエラーにならず、Mapの一番深いところで停止するバグを修正

@@ -7,7 +7,7 @@ import (
 
 // Get json root.
 func (f Filebase) Root() *Filebase {
-	f.path = make([]interface{}, 0)
+	f.path = []interface{}{}
 	return &f
 }
 
@@ -43,9 +43,18 @@ func (f Filebase) ChildPathf(format string, a ...interface{}) *Filebase {
 
 // Get json parent.
 func (f Filebase) Parent() *Filebase {
-	if len(f.path) == 0 {
-		panic("root has not parent.")
+	return f.Ancestor(1)
+}
+
+// Ancestor(1) == Parent()
+func (f Filebase) Ancestor(i int) *Filebase {
+	if i < 0 {
+		panic("Ancestor() argument can't set under 0")
 	}
-	f.path = f.path[:len(f.path)-1]
+	anc := len(f.path) - i
+	if 0 > anc {
+		panic("JSON root has not parent.")
+	}
+	f.path = f.path[:anc]
 	return &f
 }
