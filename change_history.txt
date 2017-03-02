@@ -7,11 +7,15 @@ ver1.0 -> 1.1
 ・ArrayかMapを空にするEmpty()を作成
 
 ver1.1 -> 1.2
-
-・HasKey()のArray版のInRangeIndex()を作成
-・どちらでも可能なHasChild()を作成
-・typeCheckerとtypeGetterをcheckerとgetterに変更、メソッドをいくつか移動。
-・値コピーだったToMap()とToArray()を参照コピーに変更
+追加
+・HasKey()のArray版のInRangeIndex()を追加
+・どちらでも可能なHasChild()を追加
 ・Path()/BottomPath()を追加、Child()などで過去に辿った道筋を取得できる。
 ・Parent()の複数回バージョンのAncestor()を追加
+
+修正
+・値コピーだったToMap()とToArray()、Each()等を参照コピーに変更
 ・存在しないMapへのアクセスがエラーにならず、Mapの一番深いところで停止するバグを修正
+
+その他
+・typeCheckerとtypeGetterをcheckerとgetterに変更、メソッドをいくつか移動。
