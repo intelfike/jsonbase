@@ -125,6 +125,7 @@ WriteToFile() => gzip file ".gz"
     func (f Filebase) Child(path ...interface{}) *Filebase
     func (f Filebase) ChildPath(path ...string) *Filebase
     func (f Filebase) Parent() *Filebase
+    func (f Filebase) Ancestor(i int) *Filebase
     func (f Filebase) Root() *Filebase
 ```
 Child(...interface{} => string or int) <br>
