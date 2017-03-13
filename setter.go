@@ -88,7 +88,7 @@ func mapNest(m map[string]interface{}, val interface{}, depth int, s ...string) 
 }
 
 // Set *Jsonbase.
-func (f *Jsonbase) SetFB(fb *Jsonbase) error {
+func (f *Jsonbase) SetJB(fb *Jsonbase) error {
 	b, err := fb.Bytes()
 	if err != nil {
 		return err
@@ -158,7 +158,7 @@ func (f *Jsonbase) Push(a interface{}) error {
 }
 
 // Push *Jsonbase.
-func (f *Jsonbase) PushFB(fb *Jsonbase) error {
+func (f *Jsonbase) PushJB(fb *Jsonbase) error {
 	b, err := fb.Bytes()
 	if err != nil {
 		return err
