@@ -15,6 +15,12 @@ type Jsonbase struct {
 
 var _ fmt.Stringer = Jsonbase{}
 
+func New() *Jsonbase {
+	f := new(Jsonbase)
+	f.master = new(interface{})
+	return f
+}
+
 // loop map or array
 func (f *Jsonbase) Each(fn func(*Jsonbase)) {
 	if f.IsArray() {

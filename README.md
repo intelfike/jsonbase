@@ -28,13 +28,13 @@ jsonData := `
 `
 jb := jsonbase.New()
 jb.Indent = "\t"
-jb.SetStr(jsonData)
+jb.Set().JsonText(jsonData)
 
 // Add Data
 item, _ := jb.Child(0).Clone() // value copy
-item.Child("id").Set(6)
-item.Child("name").Set("トクガワ")
-jb.PushJB(item) // like append()
+item.Child("id").Set().Value(6)
+item.Child("name").Set().Value("トクガワ")
+jb.Push().JB(item) // like append()
 
 // Display [class == "A"]
 jb.Each(func(f *jsonbase.Jsonbase) {
@@ -65,44 +65,43 @@ jb.Each(func(f *jsonbase.Jsonbase) {
 
 ```
     fmt.Println(jb.Child("a", "b").Exists()) // [false]
-    jb.Child("a", "b").Set(10)
+    jb.Child("a", "b").Set().Value(10)
     fmt.Println(jb.Child("a", "b").Exists()) // [true]
 ```
 
 ### Array append?
 
 ```
-    jb.Push(11)
+    jb.Push().Value(11)
 ```
 
 ### Make and use template?
 
 ```
     template := jsonbase.New()
-    template.SetStr(`{"key":"value"}`)
-    jb.PushJB(template) // jb.Child(0) == template
-    jb.PushJB(template) // jb.Child(1) == template
+    template.Set().JsonText(`{"key":"value"}`)
+    jb.Push().JB(template) // jb.Child(0) == template
+    jb.Push().JB(template) // jb.Child(1) == template
 ```
 
 ### Get child from filepath or other path?
 
 ```
-    jb.ChildPath("a/b/c").Set(1) // or
-    jb.ChildPath("a\\b\\b").Set(2) // or
-    jb.ChildPath("a/b\\c").Set(3) // or
-    jb.ChildPath("a/b/c", "e/f", "g").Set(4)
+    jb.ChildPath("a/b/c").Set().Set(1) // or
+    jb.ChildPath("a\\b\\b").Set().Set(2) // or
+    jb.ChildPath("a/b\\c").Set().Set(3) // or
+    jb.ChildPath("a/b/c", "e/f", "g").Set().Set(4)
 ```
 
 ## type and func list
 
-### type
+### Jsonbase
 
 ```
     type Jsonbase struct{
         Indent string
     }
 ```
-
 
 [checker.go]
 ```
@@ -118,11 +117,9 @@ func (f *Jsonbase) IsArray() bool {
 func (f *Jsonbase) IsMap() bool {
 func (f *Jsonbase) HasChild(a interface{}) bool {
 ```
-
 [getter.go]
 ```
 func (f *Jsonbase) GetInterfacePt() (*interface{}, error) {
-func New() *Jsonbase {
 func (f *Jsonbase) WriteTo(w io.Writer) error {
 func (f *Jsonbase) WriteToFile(filename string) error {
 func (f Jsonbase) String() string {
@@ -139,12 +136,11 @@ func (f *Jsonbase) ToMap() map[string]*Jsonbase {
 func (f *Jsonbase) Interface() interface{} {
 func (f *Jsonbase) Keys() []string {
 func (f *Jsonbase) Len() int {
-func (f *Jsonbase) Path() []interface{} {
-func (f *Jsonbase) BottomPath() interface{} {
 ```
 
-[golebase.go] Other functions
+[jsonbase.go]
 ```
+func New() *Jsonbase {
 func (f *Jsonbase) Each(fn func(*Jsonbase)) {
 func (f *Jsonbase) Clone() (*Jsonbase, error) {
 ```
@@ -157,27 +153,36 @@ func (f Jsonbase) ChildPath(path ...string) *Jsonbase {
 func (f Jsonbase) ChildPathf(format string, a ...interface{}) *Jsonbase {
 func (f Jsonbase) Parent() *Jsonbase {
 func (f Jsonbase) Ancestor(i int) *Jsonbase {
+func (f *Jsonbase) Path() []interface{} {
+func (f *Jsonbase) BottomPath() interface{} {
+func (f *Jsonbase) Depth() int {
 ```
 
 [setter.go]
 ```
-func (f *Jsonbase) Set(i interface{}) error {
-func mapNest(m map[string]interface{}, val interface{}, depth int, s ...string) {
-func (f *Jsonbase) SetJB(jb *Jsonbase) error {
-func (f *Jsonbase) SetReader(r io.Reader) error {
-func (f *Jsonbase) SetReadFile(filename string) error {
-func (f *Jsonbase) SetStr(s string) error {
-func (f *Jsonbase) SetPrint(a ...interface{}) error {
-func (f *Jsonbase) SetPrintf(format string, a ...interface{}) error {
-func (f *Jsonbase) Push(a interface{}) error {
-func (f *Jsonbase) PushJB(jb *Jsonbase) error {
-func (f *Jsonbase) PushReader(r io.Reader) error {
-func (f *Jsonbase) PushReadFile(filename string) error {
-func (f *Jsonbase) PushStr(s string) error {
-func (f *Jsonbase) PushPrint(a ...interface{}) error {
-func (f *Jsonbase) PushPrintf(format string, a ...interface{}) error {
+func (j *Jsonbase) Set() *Setter {
+func (j *Jsonbase) Push() *Setter {
 func (f *Jsonbase) Remove() error {
 func (f *Jsonbase) Empty() error {
+```
+
+### Setter
+
+```
+    type Setter struct{...}
+```
+
+[setter.go]
+```
+func (j *Jsonbase) Set() *Setter {
+func (j *Jsonbase) Push() *Setter {
+func (s *Setter) Value(i interface{}) error {
+func (s *Setter) Reader(r io.Reader) error {
+func (s *Setter) ReadFile(filename string) error {
+func (s *Setter) JB(jb *Jsonbase) error {
+func (s *Setter) JsonText(str string) error {
+func (s *Setter) Print(a ...interface{}) error {
+func (s *Setter) Printf(format string, a ...interface{}) error {
 ```
 
 ## Licence

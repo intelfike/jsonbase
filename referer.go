@@ -58,3 +58,17 @@ func (f Jsonbase) Ancestor(i int) *Jsonbase {
 	f.path = f.path[:anc]
 	return &f
 }
+
+func (f *Jsonbase) Path() []interface{} {
+	return f.path
+}
+func (f *Jsonbase) BottomPath() interface{} {
+	if len(f.path) == 0 {
+		return nil
+	}
+	return f.path[len(f.path)-1]
+}
+
+func (f *Jsonbase) Depth() int {
+	return len(f.path)
+}
