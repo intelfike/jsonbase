@@ -1,4 +1,4 @@
-package filebase
+package jsonbase
 
 import (
 	"fmt"
@@ -6,13 +6,13 @@ import (
 )
 
 // Get json root.
-func (f Filebase) Root() *Filebase {
+func (f Jsonbase) Root() *Jsonbase {
 	f.path = []interface{}{}
 	return &f
 }
 
 // Child(...interface{}.(type) == string or int)
-func (f Filebase) Child(path ...interface{}) *Filebase {
+func (f Jsonbase) Child(path ...interface{}) *Jsonbase {
 	for _, v := range path {
 		switch v.(type) {
 		case string, int:
@@ -29,7 +29,7 @@ var splitReg = regexp.MustCompile("[/\\\\]")
 // "a/b/c" => {"a":{"b":{"c":???}}}
 //
 // "/" Split.
-func (f Filebase) ChildPath(path ...string) *Filebase {
+func (f Jsonbase) ChildPath(path ...string) *Jsonbase {
 	for _, v := range path {
 		for _, v2 := range splitReg.Split(v, -1) {
 			f.path = append(f.path, v2)
@@ -37,17 +37,17 @@ func (f Filebase) ChildPath(path ...string) *Filebase {
 	}
 	return &f
 }
-func (f Filebase) ChildPathf(format string, a ...interface{}) *Filebase {
+func (f Jsonbase) ChildPathf(format string, a ...interface{}) *Jsonbase {
 	return f.ChildPath(fmt.Sprintf(format, a...))
 }
 
 // Get json parent.
-func (f Filebase) Parent() *Filebase {
+func (f Jsonbase) Parent() *Jsonbase {
 	return f.Ancestor(1)
 }
 
 // Ancestor(1) == Parent()
-func (f Filebase) Ancestor(i int) *Filebase {
+func (f Jsonbase) Ancestor(i int) *Jsonbase {
 	if i < 0 {
 		panic("Ancestor() argument can't set under 0")
 	}

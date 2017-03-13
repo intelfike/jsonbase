@@ -1,11 +1,16 @@
-package filebase
+package jsonbase
 
 // if has child then
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
+	"strings"
 )
 
 // update child.
@@ -14,10 +19,17 @@ import (
 // make child.
 //
 // Can't make array.
-func (f *Filebase) Set(i interface{}) error {
+func (f *Jsonbase) Set(i interface{}) error {
 	if len(f.path) == 0 {
 		*f.master = i
 		return nil
+	} else {
+		// topがマップや配列じゃなかったら作る
+		switch (*f.master).(type) {
+		case []interface{}, map[string]interface{}:
+		default:
+			*f.master = map[string]interface{}{}
+		}
 	}
 	cur := new(interface{})
 	*cur = *f.master
@@ -60,10 +72,7 @@ func (f *Filebase) Set(i interface{}) error {
 				*cur = mas[pt]
 			}
 		default:
-			// _, ok := pathv.(string)
-			// if ok{
 
-			// }
 		}
 	}
 	return nil
@@ -78,32 +87,55 @@ func mapNest(m map[string]interface{}, val interface{}, depth int, s ...string) 
 	mapNest(mm, val, depth+1, s...)
 }
 
-// Set *Filebase.
-func (f *Filebase) SetFB(fb *Filebase) error {
+// Set *Jsonbase.
+func (f *Jsonbase) SetFB(fb *Jsonbase) error {
 	b, err := fb.Bytes()
 	if err != nil {
 		return err
 	}
-	return f.SetStr(string(b))
+	return f.SetReader(bytes.NewReader(b))
 }
 
-// Set string.
-func (f *Filebase) SetStr(s string) error {
+func (f *Jsonbase) SetReader(r io.Reader) error {
 	i := new(interface{})
-	err := json.Unmarshal([]byte(s), i)
+	dec := json.NewDecoder(r)
+	err := dec.Decode(i)
 	if err != nil {
 		return err
 	}
 	return f.Set(*i)
 }
 
+func (f *Jsonbase) SetReadFile(filename string) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	if strings.HasSuffix(filename, ".gz") {
+		r, err := gzip.NewReader(file)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+		return f.SetReader(r)
+	}
+
+	return f.SetReader(file)
+}
+
+// Set string.
+func (f *Jsonbase) SetStr(s string) error {
+	return f.SetReader(strings.NewReader(s))
+}
+
 // SetStr() + fmt.Sprint().
-func (f *Filebase) SetPrint(a ...interface{}) error {
+func (f *Jsonbase) SetPrint(a ...interface{}) error {
 	return f.SetStr(fmt.Sprint(a...))
 }
 
 // SetStr() + fmt.Sprintf().
-func (f *Filebase) SetPrintf(format string, a ...interface{}) error {
+func (f *Jsonbase) SetPrintf(format string, a ...interface{}) error {
 	return f.SetStr(fmt.Sprintf(format, a...))
 }
 
@@ -112,53 +144,82 @@ func (f *Filebase) SetPrintf(format string, a ...interface{}) error {
 // If json node is array then add i.
 //
 // else then set []interface{i} (initialize for array).
-func (f *Filebase) Push(a interface{}) error {
+func (f *Jsonbase) Push(a interface{}) error {
 	if !f.IsArray() {
 		f.Set([]interface{}{a})
 		return nil
 	}
-	i := f.Interface()
-	ar := i.([]interface{})
+	pt, err := f.GetInterfacePt()
+	if err != nil {
+		return err
+	}
+	ar := (*pt).([]interface{})
 	return f.Set(append(ar, a))
 }
 
-// Push *Filebase.
-func (f *Filebase) PushFB(fb *Filebase) error {
+// Push *Jsonbase.
+func (f *Jsonbase) PushFB(fb *Jsonbase) error {
 	b, err := fb.Bytes()
 	if err != nil {
 		return err
 	}
-	return f.PushStr(string(b))
+	return f.PushReader(bytes.NewReader(b))
 }
 
-// push string.
-func (f *Filebase) PushStr(s string) error {
+func (f *Jsonbase) PushReader(r io.Reader) error {
 	i := new(interface{})
-	err := json.Unmarshal([]byte(s), i)
+	dec := json.NewDecoder(r)
+	err := dec.Decode(i)
 	if err != nil {
 		return err
 	}
 	return f.Push(*i)
 }
 
+func (f *Jsonbase) PushReadFile(filename string) error {
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	if strings.HasSuffix(filename, ".gz") {
+		r, err := gzip.NewReader(file)
+		if err != nil {
+			return err
+		}
+		defer r.Close()
+		return f.PushReader(r)
+	}
+
+	return f.PushReader(file)
+}
+
+// push string.
+func (f *Jsonbase) PushStr(s string) error {
+	return f.PushReader(strings.NewReader(s))
+}
+
 // PushStr() + fmt.Sprint().
-func (f *Filebase) PushPrint(a ...interface{}) error {
+func (f *Jsonbase) PushPrint(a ...interface{}) error {
 	return f.PushStr(fmt.Sprint(a...))
 }
 
 // PushStr() + fmt.Sprintf().
-func (f *Filebase) PushPrintf(format string, a ...interface{}) error {
+func (f *Jsonbase) PushPrintf(format string, a ...interface{}) error {
 	return f.PushStr(fmt.Sprintf(format, a...))
 }
 
 // Remove() remove map or array element
-func (f *Filebase) Remove() error {
+func (f *Jsonbase) Remove() error {
 	if len(f.path) == 0 {
 		return errors.New("Root can't remove. Use Empty().")
 	}
 	path := f.path[len(f.path)-1]
-	i := f.Parent().Interface()
-	switch t := i.(type) {
+	pt, err := f.Parent().GetInterfacePt()
+	if err != nil {
+		return err
+	}
+	switch t := (*pt).(type) {
 	case map[string]interface{}:
 		st, ok := path.(string)
 		if !ok {
@@ -177,13 +238,13 @@ func (f *Filebase) Remove() error {
 		if 0 > it || it >= len(t) {
 			return errors.New("Array index out of range.")
 		}
-		f.Parent().Set(append(t[:it], t[it+1:]...))
+		return f.Parent().Set(append(t[:it], t[it+1:]...))
 	default:
 		return errors.New("JSON node not exists. ")
 	}
 	return nil
 }
-func (f *Filebase) Empty() error {
+func (f *Jsonbase) Empty() error {
 	if f.IsArray() {
 		f.Set([]interface{}{})
 	} else if f.IsMap() {

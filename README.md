@@ -36,7 +36,7 @@ item.Child("name").Set("トクガワ")
 fb.PushFB(item) // like append()
 
 // Display [class == "A"]
-fb.Each(func(f *filebase.Filebase) {
+fb.Each(func(f *filebase.Jsonbase) {
     if f.Child("class").ToString() == "A" {
         fmt.Println(f) // ↓[output]↓
     }
@@ -96,120 +96,87 @@ fb.Each(func(f *filebase.Filebase) {
 ### type
 
 ```
-    type Filebase struct{
+    type Jsonbase struct{
         Indent string
     }
 ```
 
-### Maker func
 
+[checker.go]
 ```
-    func MustNew(b []byte) *Filebase
-    func New(b []byte) (*Filebase, error)
-    func NewByFile(filename) (*Filebase, error)
-    func NewByReader(reader io.Reader) (*Filebase, error)
-```
-NewByFile() => gzip file ".gz"
-
-### Writer func
-
-```
-    func (f *Filebase) WriteTo(w io.Writer) error
-    func (f *Filebase) WriteToFile(filename string) error
-```
-WriteToFile() => gzip file ".gz"
-
-### Referer func
-
-```
-    func (f Filebase) Child(path ...interface{}) *Filebase
-    func (f Filebase) ChildPath(path ...string) *Filebase
-    func (f Filebase) Parent() *Filebase
-    func (f Filebase) Ancestor(i int) *Filebase
-    func (f Filebase) Root() *Filebase
-```
-Child(...interface{} => string or int) <br>
-
-### Getter func
-
-```
-    func (f Filebase) String() string
-    func (f *Filebase) Bytes() ([]byte, error)
-    func (f *Filebase) BytesIndent() ([]byte, error)
-
-    func (f *Filebase) ToArray() []*Filebase
-    func (f *Filebase) ToBool() bool
-    func (f *Filebase) ToBytes() []byte
-    func (f *Filebase) ToFloat() float64
-    func (f *Filebase) ToInt() int64
-    func (f *Filebase) ToMap() map[string]*Filebase
-    func (f *Filebase) ToString() string
-    func (f *Filebase) ToUint() uint64
-
-    func (f *Filebase) Interface() interface{}
-    func (f *Filebase) GetInterfacePt() (*interface{}, error)
-
-    func (f *Filebase) Keys() []string
-    func (f *Filebase) Len() int
+func (f *Jsonbase) Exists() bool {
+func (f *Jsonbase) ReferError() error {
+func (f *Jsonbase) IsString() bool {
+func (f *Jsonbase) IsBool() bool {
+func (f *Jsonbase) IsInt() bool {
+func (f *Jsonbase) IsUint() bool {
+func (f *Jsonbase) IsFloat() bool {
+func (f *Jsonbase) IsNull() bool {
+func (f *Jsonbase) IsArray() bool {
+func (f *Jsonbase) IsMap() bool {
+func (f *Jsonbase) HasChild(a interface{}) bool {
 ```
 
-To*() => Interface() wrapper<br>
-<br>
-GetInterface() => If you want to do type switch then use this.<br>
-But do not often use it for eliminate mistake because hard to use.<br>
-<br>
-String() => fmt.Stringer<br>
-<br>
-Keys() => map keys <br>
-Len() => array length <br>
-
-### Setter func
-
+[getter.go]
 ```
-    func (f *Filebase) Push(a interface{}) error
-    func (f *Filebase) PushFB(fb *Filebase) error
-    func (f *Filebase) PushPrint(a ...interface{}) error
-    func (f *Filebase) PushPrintf(s string, a ...interface{}) error
-    func (f *Filebase) PushStr(s string) error
-
-    func (f *Filebase) Set(i interface{}) error
-    func (f *Filebase) SetFB(fb *Filebase) error
-    func (f *Filebase) SetPrint(a ...interface{}) error
-    func (f *Filebase) SetPrintf(s string, a ...interface{}) error
-    func (f *Filebase) SetStr(s string) error
-    
-    func (f *Filebase) Remove() error
-    func (f *Filebase) Empty() error
-```
-Set() => append map or set value<br>
-Push() => append array <br>
-
-### Checker func
-
-```
-    func (f *Filebase) Exists() bool
-    func (f *Filebase) HasChild(a interface{}) bool
-    func (f *Filebase) HasKey(s string) bool
-    func (f *Filebase) InRangeIndex(i int) bool
-
-    func (f *Filebase) IsArray() bool
-    func (f *Filebase) IsBool() bool
-    func (f *Filebase) IsFloat() bool
-    func (f *Filebase) IsInt() bool
-    func (f *Filebase) IsMap() bool
-    func (f *Filebase) IsNull() bool
-    func (f *Filebase) IsString() bool
-    func (f *Filebase) IsUint() bool
+func (f *Jsonbase) GetInterfacePt() (*interface{}, error) {
+func New() *Jsonbase {
+func (f *Jsonbase) WriteTo(w io.Writer) error {
+func (f *Jsonbase) WriteToFile(filename string) error {
+func (f Jsonbase) String() string {
+func (f *Jsonbase) Bytes() ([]byte, error) {
+func (f *Jsonbase) BytesIndent() ([]byte, error) {
+func (f *Jsonbase) ToString() string {
+func (f *Jsonbase) ToBytes() []byte {
+func (f *Jsonbase) ToBool() bool {
+func (f *Jsonbase) ToInt() int64 {
+func (f *Jsonbase) ToUint() uint64 {
+func (f *Jsonbase) ToFloat() float64 {
+func (f *Jsonbase) ToArray() []*Jsonbase {
+func (f *Jsonbase) ToMap() map[string]*Jsonbase {
+func (f *Jsonbase) Interface() interface{} {
+func (f *Jsonbase) Keys() []string {
+func (f *Jsonbase) Len() int {
+func (f *Jsonbase) Path() []interface{} {
+func (f *Jsonbase) BottomPath() interface{} {
 ```
 
-### Other func
+[golebase.go]
 ```
-    func (f *Filebase) Clone() (*Filebase, error) 
-    func (f *Filebase) Each(fn func(*Filebase))
+func (f *Jsonbase) Each(fn func(*Jsonbase)) {
+func (f *Jsonbase) Clone() (*Jsonbase, error) {
 ```
-Clone() => value copy. <br>
-"f" location become to new json root.<br>
-Each() => loop map or array.<br>
+
+[referer.go]
+```
+func (f Jsonbase) Root() *Jsonbase {
+func (f Jsonbase) Child(path ...interface{}) *Jsonbase {
+func (f Jsonbase) ChildPath(path ...string) *Jsonbase {
+func (f Jsonbase) ChildPathf(format string, a ...interface{}) *Jsonbase {
+func (f Jsonbase) Parent() *Jsonbase {
+func (f Jsonbase) Ancestor(i int) *Jsonbase {
+```
+
+[setter.go]
+```
+func (f *Jsonbase) Set(i interface{}) error {
+func mapNest(m map[string]interface{}, val interface{}, depth int, s ...string) {
+func (f *Jsonbase) SetFB(fb *Jsonbase) error {
+func (f *Jsonbase) SetReader(r io.Reader) error {
+func (f *Jsonbase) SetReadFile(filename string) error {
+func (f *Jsonbase) SetStr(s string) error {
+func (f *Jsonbase) SetPrint(a ...interface{}) error {
+func (f *Jsonbase) SetPrintf(format string, a ...interface{}) error {
+func (f *Jsonbase) Push(a interface{}) error {
+func (f *Jsonbase) PushFB(fb *Jsonbase) error {
+func (f *Jsonbase) PushReader(r io.Reader) error {
+func (f *Jsonbase) PushReadFile(filename string) error {
+func (f *Jsonbase) PushStr(s string) error {
+func (f *Jsonbase) PushPrint(a ...interface{}) error {
+func (f *Jsonbase) PushPrintf(format string, a ...interface{}) error {
+func (f *Jsonbase) Remove() error {
+func (f *Jsonbase) Empty() error {
+```
 
 ## Licence
 MIT

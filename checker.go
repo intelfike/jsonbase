@@ -1,50 +1,48 @@
-package filebase
+package jsonbase
 
-func (f *Filebase) Exists() bool {
-	_, err := f.GetInterfacePt()
-	return err == nil
+func (f *Jsonbase) Exists() bool {
+	return f.ReferError() == nil
 }
-func (f *Filebase) IsString() bool {
+func (f *Jsonbase) ReferError() error {
+	_, err := f.GetInterfacePt()
+	return err
+}
+
+func (f *Jsonbase) IsString() bool {
 	_, ok := (f.Interface()).(string)
 	return ok
 }
-func (f *Filebase) IsBool() bool {
+func (f *Jsonbase) IsBool() bool {
 	_, ok := (f.Interface()).(bool)
 	return ok
 }
-func (f *Filebase) IsInt() bool {
+func (f *Jsonbase) IsInt() bool {
 	_, ok := (f.Interface()).(int)
 	return ok
 }
-func (f *Filebase) IsUint() bool {
+func (f *Jsonbase) IsUint() bool {
 	_, ok := (f.Interface()).(uint)
 	return ok
 }
-func (f *Filebase) IsFloat() bool {
+func (f *Jsonbase) IsFloat() bool {
 	_, ok := (f.Interface()).(float64)
 	return ok
 }
-func (f *Filebase) IsNull() bool {
+func (f *Jsonbase) IsNull() bool {
 	if !f.Exists() {
 		return false
 	}
 	return f.Interface() == nil
 }
-func (f *Filebase) IsArray() bool {
+func (f *Jsonbase) IsArray() bool {
 	_, ok := (f.Interface()).([]interface{})
 	return ok
 }
-func (f *Filebase) IsMap() bool {
+func (f *Jsonbase) IsMap() bool {
 	_, ok := (f.Interface()).(map[string]interface{})
 	return ok
 }
 
-func (f *Filebase) HasChild(a interface{}) bool {
+func (f *Jsonbase) HasChild(a interface{}) bool {
 	return f.Child(a).Exists()
-}
-func (f *Filebase) HasKey(s string) bool {
-	return f.Child(s).Exists()
-}
-func (f *Filebase) InRangeIndex(i int) bool {
-	return f.Child(i).Exists()
 }
